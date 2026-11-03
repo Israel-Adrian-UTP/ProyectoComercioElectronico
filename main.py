@@ -116,3 +116,16 @@ class CheckoutFacade:
         
         return Comprobante(carrito, total_a_pagar)
 
+# Manejo De Excepciones
+class StockInsuficienteError(Exception):
+    """Excepción lanzada cuando no hay stock suficiente para un producto."""
+    pass
+
+class PagoRechazadoError(Exception):
+    """Excepción lanzada cuando la pasarela rechaza el pago."""
+    pass
+
+class TipoProductoInvalidoError(Exception):
+    """Excepción lanzada al intentar instanciar un tipo de producto desconocido."""
+    pass
+
