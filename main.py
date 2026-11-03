@@ -98,3 +98,21 @@ class Comprobante:
         print(f"TOTAL PAGADO (Incluyendo envío): S/ {self.total_pagado:.2f}")
         print("========================================\n")
 
+# Patron Facade
+class CheckoutFacade:
+    def __init__(self, inventario: InventarioService):
+        self._inventario = inventario
+
+    def finalizar_compra(self, carrito: Carrito, pago: MetodoPago, envio: CalculoEnvio) -> Comprobante:
+        self._inventario.validar_stock(carrito)
+        costo_envio = envio.calcular(carrito.total())
+        total_a_pagar = carrito.total() + costo_envio
+        
+        print(f"Subtotal carrito: S/ {carrito.total():.2f}")
+        print(f"Costo de envío: S/ {costo_envio:.2f}")
+        
+        pago.pagar(total_a_pagar)
+        self._inventario.descontar_stock(carrito)
+        
+        return Comprobante(carrito, total_a_pagar)
+
