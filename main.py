@@ -34,3 +34,67 @@ class ProductoDigitalFactory(ProductoFactory):
     def crear_producto(self, nombre: str, precio: float, stock: int) -> Producto:
         return ProductoDigital(nombre, precio, stock)
 
+# Patron Strategy
+class MetodoPago(ABC):
+    @abstractmethod
+    def pagar(self, monto: float) -> None:
+        pass
+
+class PagoTarjeta(MetodoPago):
+    def pagar(self, monto: float) -> None:
+        # Validar tarjeta y procesar pago
+        print(f"-> Procesando pago con Tarjeta de Crédito/Débito: S/ {monto:.2f}")
+
+class PagoYape(MetodoPago):
+    def pagar(self, monto: float) -> None:
+        print(f"-> Procesando pago con Yape: S/ {monto:.2f}")
+
+class CalculoEnvio(ABC):
+    @abstractmethod
+    def calcular(self, subtotal: float) -> float:
+        pass
+
+class EnvioLima(CalculoEnvio):
+    def calcular(self, subtotal: float) -> float:
+        return 15.00
+
+class EnvioProvincia(CalculoEnvio):
+    def calcular(self, subtotal: float) -> float:
+        return 35.00
+
+class Carrito:
+    def __init__(self):
+        self.items = {}  # {Producto: cantidad}
+    def agregar(self, producto: Producto, cantidad: int):
+        self.items[producto] = self.items.get(producto, 0) + cantidad
+    def total(self) -> float:
+        return sum(prod.precio * cant for prod, cant in self.items.items())
+
+class InventarioService:
+    def __init__(self):
+        self.productos = []
+    def agregar_producto(self, producto: Producto):
+        self.productos.append(producto)
+    def validar_stock(self, carrito: Carrito):
+        for prod, cant in carrito.items.items():
+            if prod.stock < cant:
+                raise StockInsuficienteError(
+                    f"Stock insuficiente para '{prod.nombre}'. Disponible: {prod.stock}, Solicitado: {cant}."
+                )
+    def descontar_stock(self, carrito: Carrito):
+        for prod, cant in carrito.items.items():
+            prod.stock -= cant
+
+class Comprobante:
+    def __init__(self, carrito: Carrito, total_pagado: float):
+        self.carrito = carrito
+        self.total_pagado = total_pagado
+    def mostrar(self):
+        print("\n========================================")
+        print("          COMPROBANTE DE PAGO           ")
+        print("========================================")
+        for prod, cant in self.carrito.items.items():
+            print(f"- {prod.nombre} x {cant} = S/ {prod.precio * cant:.2f}")
+        print(f"TOTAL PAGADO (Incluyendo envío): S/ {self.total_pagado:.2f}")
+        print("========================================\n")
+
