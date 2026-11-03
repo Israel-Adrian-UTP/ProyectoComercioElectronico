@@ -20,4 +20,17 @@ class ProductoDigital(Producto):
     def obtener_descripcion(self) -> str:
         return f"[Producto Digital] {self.nombre} - S/ {self.precio:.2f} (Licencia Virtual)"
 
+# Patron Factory Method
+class ProductoFactory(ABC):
+    @abstractmethod
+    def crear_producto(self, nombre: str, precio: float, stock: int) -> Producto:
+        pass
+
+class ProductoFisicoFactory(ProductoFactory):
+    def crear_producto(self, nombre: str, precio: float, stock: int) -> Producto:
+        return ProductoFisico(nombre, precio, stock)
+
+class ProductoDigitalFactory(ProductoFactory):
+    def crear_producto(self, nombre: str, precio: float, stock: int) -> Producto:
+        return ProductoDigital(nombre, precio, stock)
 
