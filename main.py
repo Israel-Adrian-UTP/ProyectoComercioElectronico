@@ -129,3 +129,38 @@ class TipoProductoInvalidoError(Exception):
     """Excepción lanzada al intentar instanciar un tipo de producto desconocido."""
     pass
 
+# Ejecucion Del Sistema
+if __name__ == "__main__":
+    print("=== INICIANDO SISTEMA DE LA PLATAFORMA COMPUX ===")
+    # 1. Configurar servicios e inventario
+    inventario = InventarioService()
+    # 2. Utilizar Factorías
+    factory_fisico = ProductoFisicoFactory()
+    factory_digital = ProductoDigitalFactory()
+    laptop = factory_fisico.crear_producto("Laptop Gamer ASUS", 3500.00, 4)
+    licencia = factory_digital.crear_producto("Licencia Antivirus 1 Año", 120.00, 20)
+    inventario.agregar_producto(laptop)
+    inventario.agregar_producto(licencia)
+    print("\n--- PRODUCTOS CREADOS E INVENTARIO INICIAL ---")
+    print(laptop.obtener_descripcion())
+    print(licencia.obtener_descripcion())
+    # 3. Armar Carrito de Compras
+    mi_carrito = Carrito()
+    mi_carrito.agregar(laptop, 1)
+    mi_carrito.agregar(licencia, 2)
+    # 4. Procesar pago y envío
+    facade = CheckoutFacade(inventario)
+    metodo_pago = PagoYape()
+    metodo_envio = EnvioProvincia()
+    # 5. Generar Comprobante De Pago
+    try:
+        print("\n--- PROCESANDO CHECKOUT ---")
+        comprobante = facade.finalizar_compra(mi_carrito, metodo_pago, metodo_envio)
+        comprobante.mostrar()
+        print(f"Stock actualizado de Laptop: {laptop.stock}")
+        print("¡Pruebas ejecutadas con éxito y sin errores de stock/pago!")
+        
+    except (StockInsuficienteError, PagoRechazadoError) as e:
+        print(f"[Error de Negocio]: {e}")
+    except Exception as e:
+        print(f"[Error Inesperado]: {e}")
