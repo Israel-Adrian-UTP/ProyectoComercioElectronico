@@ -20,3 +20,4 @@ class ProductoDigital(Producto):
     def obtener_descripcion(self) -> str:
         return f"[Producto Digital] {self.nombre} - S/ {self.precio:.2f} (Licencia Virtual)"
 
+
